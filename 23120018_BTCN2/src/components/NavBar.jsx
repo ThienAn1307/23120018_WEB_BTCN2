@@ -1,0 +1,60 @@
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Search, Home } from 'lucide-react';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+
+export const Navbar = () => {
+    const [searchTerm, setSearchTerm] = useState('');
+    const navigate = useNavigate();
+
+    // Xử lý khi người dùng nhấn Enter hoặc nút Search
+    const handleSearch = (e) => {
+        e.preventDefault();
+        if (searchTerm.trim()) {
+            // Điều hướng đến trang tìm kiếm với tham số truy vấn
+            // Giả định trang tìm kiếm là /search?query=...
+            navigate(`/search?query=${encodeURIComponent(searchTerm.trim())}`);
+        }
+    };
+
+    return (
+        <nav className="bg-gray-100 dark:bg-gray-800 shadow-md">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-14">
+                
+                {/* Nút Home */}
+                <div className="flex items-center">
+                    <Link to="/" className="text-red-600 hover:bg-gray-200 rounded dark:text-red-400 dark:hover:bg-gray-700 transition duration-150">
+                        <Home className="m-2 h-6 w-6" />
+                    </Link>
+                </div>
+                
+                {/* Search Box và Search Button */}
+                <form onSubmit={handleSearch} className="flex items-center space-x-2 w-full max-w-lg">
+                    {/* Search Box */}
+                    <div className="relative flex-grow">
+                        <Input 
+                            type="text"
+                            placeholder="Tìm kiếm phim..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full pl-10 pr-4 py-2 rounded-lg border dark:border-gray-700 dark:bg-gray-700 dark:text-white focus:ring-red-500 focus:border-red-500"
+                        />
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-300" />
+                    </div>
+                    
+                    {/* Search Button */}
+                    <Button 
+                        type="submit" 
+                        className="bg-red-600 hover:bg-red-400 dark:bg-red-400 dark:hover:bg-red-500 text-white font-medium px-4 py-2"
+                        disabled={!searchTerm.trim()}
+                    >
+                        <Search className="h-5 w-5 md:hidden" /> 
+                        <span className="hidden md:inline">Tìm Kiếm</span>
+                    </Button>
+                </form>
+
+            </div>
+        </nav>
+    );
+};
