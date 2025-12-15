@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, Star } from 'lucide-react';
 import { Button } from '../components/ui/button';
-import { MovieCard } from '../components/MovieCard';
+import { MovieSection } from '../components/MovieSection';
 
 import { useMovies } from '../context/MovieContext';
 
@@ -10,8 +10,8 @@ export const HomePage = () => {
 
   // Tải phim khi trang được tải
   useEffect(() => {
-    getPopularMovies(1, 30);
-    getTopRatedMovies('IMDB_TOP_50', 1, 30);
+    getPopularMovies(30);
+    getTopRatedMovies('IMDB_TOP_50', 30);
   }, [getPopularMovies, getTopRatedMovies]);
 
   // Giới hạn hiển thị 5 phim đầu tiên
@@ -84,19 +84,27 @@ export const HomePage = () => {
             </div>
         </div>
 
-            {/* Nút Next */}
-            <button
-                onClick={goToNext}
-                className="absolute right-0 flex items-center z-10 p-3 bg-black/40 hover:bg-black/60 rounded-full text-white transition duration-200 focus:outline-none focus:ring-2 focus:ring-yellow-400 mx-2"
-                aria-label="Next movie"
-            >
-                <ChevronRight className="h-6 w-6" />
-            </button>
-        </div>
+        {/* Nút Next */}
+        <button
+            onClick={goToNext}
+            className="absolute right-0 flex items-center z-10 p-3 bg-black/40 hover:bg-black/60 rounded-full text-white transition duration-200 focus:outline-none focus:ring-2 focus:ring-yellow-400 mx-2"
+            aria-label="Next movie"
+        >
+            <ChevronRight className="h-6 w-6" />
+        </button>
+      </div>
 
       {/* --- Khu vực 2: Phim phổ biến nhất --- */}
+      <MovieSection 
+        title="Most Popular"
+        movies={popularMovies}
+      />
 
       {/* --- Khu vực 3: Phim xếp hạng cao --- */}
+      <MovieSection 
+        title="Top Rating"
+        movies={topRatedMovies}
+      />
     </>
   );
 };
