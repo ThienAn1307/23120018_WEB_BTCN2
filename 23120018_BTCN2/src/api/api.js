@@ -76,12 +76,12 @@ export const logoutApi = async () => {
 
 // Hàm lấy thông tin người dùng hiện tại
 export const getCurrentUserApi = async () => {
-    const token = getUserToken();
-    if (!token) throw new Error('Yêu cầu đăng nhập');
+    const userToken = getUserToken();
+    if (!userToken) throw new Error('Yêu cầu đăng nhập');
 
     return handleRequest(`${BASE_URL}/users/profile`, {
         method: 'GET',
-        headers: { 'Authorization': `Bearer ${APP_TOKEN}` },
+        headers: { 'Authorization': `Bearer ${userToken}` },
     });
 }
 
@@ -89,32 +89,32 @@ export const getCurrentUserApi = async () => {
 
 // Hàm lấy danh sách phim yêu thích của người dùng
 export const getFavoritesApi = async () => {
-    const token = getUserToken();
+    const userToken = getUserToken();
 
-    if (!token) return []; 
+    if (!userToken) return []; 
     return handleRequest(`${BASE_URL}/users/favorites`, {
         method: 'GET', 
-        headers: { 'Authorization': `Bearer ${APP_TOKEN}` } 
+        headers: { 'Authorization': `Bearer ${userToken}` } 
     });
 };
 
 export const addFavoritesApi = async (movieId) => {
-    const token = getUserToken();
+    const userToken = getUserToken();
 
-    if (!token) throw new Error('Yêu cầu đăng nhập');
+    if (!userToken) throw new Error('Yêu cầu đăng nhập');
     return handleRequest(`${BASE_URL}/users/favorites/${movieId}`, {
         method: 'POST', 
-        headers: { 'Authorization': `Bearer ${APP_TOKEN}` } 
+        headers: { 'Authorization': `Bearer ${userToken}` } 
     });
 };
 
 export const removeFavoritesApi = async (movieId) => {
-    const token = getUserToken();
+    const userToken = getUserToken();
 
-    if (!token) throw new Error('Yêu cầu đăng nhập');
+    if (!userToken) throw new Error('Yêu cầu đăng nhập');
     return handleRequest(`${BASE_URL}/users/favorites/${movieId}`, {
         method: 'DELETE', 
-        headers: { 'Authorization': `Bearer ${APP_TOKEN}` } 
+        headers: { 'Authorization': `Bearer ${userToken}` } 
     });
 };
 
@@ -131,6 +131,8 @@ export const getMoviesApi = async (page = 1, limit = 10) => { //
 
 // Hàm tìm kiếm phim theo từ khóa
 export const searchMoviesApi = async (keyword, params = {}) => {
+    const defaultParams = { page: 1, limit: 10 };
+    params = { ...defaultParams, ...params };
     const query = new URLSearchParams(params).toString();
     const url = `${BASE_URL}/movies/search?${encodeURIComponent(keyword)}${query ? `?${query}` : ''}`;
     return handleRequest(url, {
@@ -140,8 +142,8 @@ export const searchMoviesApi = async (keyword, params = {}) => {
 };
 
 // Hàm lấy danh sách phim được xếp hạng cao
-export const getTopRatedMoviesApi = async (params = {}) => {
-    const query = new URLSearchParams(params).toString();
+export const getTopRatedMoviesApi = async (category = 'IMDB_TOP_50', page = 1, limit = 10) => {
+    const query = new URLSearchParams({category, page, limit }).toString();
     const url = `${BASE_URL}/movies/top-rated${query ? `?${query}` : ''}`;
     return handleRequest(url, {
         method: 'GET',
@@ -150,8 +152,8 @@ export const getTopRatedMoviesApi = async (params = {}) => {
 };
 
 // Hàm lấy danh sách phim phổ biến nhất
-export const getMostPopularMoviesApi = async (params = {}) => {
-    const query = new URLSearchParams(params).toString();
+export const getPopularMoviesApi = async (page = 1, limit = 10) => {
+    const query = new URLSearchParams({ page, limit }).toString();
     const url = `${BASE_URL}/movies/most-popular${query ? `?${query}` : ''}`;
     return handleRequest(url, {
         method: 'GET',

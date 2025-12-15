@@ -52,7 +52,7 @@ export const Header = () => {
     };
 
     return (
-        <header className="flex items-center justify-between p-4 border-b bg-white dark:bg-gray-900">
+        <header className="flex items-center justify-between p-4 border-b bg-white dark:bg-gray-900 h-16">
             <div className="text-lg font-bold text-red-600 dark:text-red-400">23120018</div>
             <div className="text-2xl font-bold text-red-600 dark:text-red-400">Movies Info</div>
             

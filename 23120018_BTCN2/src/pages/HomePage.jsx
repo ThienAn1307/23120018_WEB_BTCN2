@@ -1,113 +1,102 @@
-import React, { useState, useEffect } from 'react';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { ChevronLeft, ChevronRight, Star } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { MovieCard } from '../components/MovieCard';
 
-import { getMoviesApi } from '../api/api';
-
-const MOVIES_PER_PAGE = 10;
+import { useMovies } from '../context/MovieContext';
 
 export const HomePage = () => {
-  const [movies, setMovies] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  
-  // State cho Pagination
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const { popularMovies, topRatedMovies, getPopularMovies, getTopRatedMovies } = useMovies();
 
-  // Lấy dữ liệu phim với phân trang
+  // Tải phim khi trang được tải
   useEffect(() => {
-      const loadMovies = async () => {
-        setLoading(true);
-        setError(null);
-        try {
-          const result = await getMoviesApi(currentPage, MOVIES_PER_PAGE);
-          setMovies(result.data); 
-          setTotalPages(result.pagination.total_pages);
-          setCurrentPage(result.pagination.current_page);
-        } catch (err) {
-          // Xử lý lỗi API
-          console.error("Lỗi khi tải danh sách phim:", err);
-          setError(err.message || "Không thể tải dữ liệu.");
-        } finally {
-          setLoading(false);
-        }
-      };
-      loadMovies();
-    }, [currentPage]);
+    getPopularMovies(1, 30);
+    getTopRatedMovies('IMDB_TOP_50', 1, 30);
+  }, [getPopularMovies, getTopRatedMovies]);
 
-  const handlePageChange = (newPage) => {
-      if (newPage >= 1 && newPage <= totalPages) {
-          setCurrentPage(newPage);
-          window.scrollTo(0, 0); 
-      }
-  };
+  // Giới hạn hiển thị 5 phim đầu tiên
+  const featuredMovies = popularMovies.slice(0, 5);
+  const [currentIndex, setCurrentIndex] = useState(0); // Chỉ số phim hiện tại trong slideshow
 
-  // Xử lý Trạng thái Loading và Error
-  if (loading) {
-      return (
-        <div className="flex justify-center items-center min-h-[70vh] dark:text-white text-xl">
-            Đang tải danh sách phim...
-        </div>
-      );
+  const totalMovies = featuredMovies.length;
+  
+  // Hàm chuyển poster
+  const goToNext = useCallback(() => {
+    setCurrentIndex((prevIndex) => (prevIndex === totalMovies - 1 ? 0 : prevIndex + 1));
+  }, [totalMovies]);
+  
+  const goToPrev = useCallback(() => {
+    setCurrentIndex((prevIndex) => (prevIndex === 0 ? totalMovies - 1 : prevIndex - 1));
+  }, [totalMovies]);
+  
+  // Kiểm tra nếu không có phim hoặc ít hơn 1 phim
+  if (!featuredMovies || featuredMovies.length === 0) {
+    return <div className="p-8 text-center text-gray-500 dark:text-gray-400">Không có dữ liệu để hiển thị.</div>;
   }
   
-  if (error) {
-      return (
-        <div className="text-center p-8 text-red-500 bg-red-100 dark:bg-red-900/20 rounded-lg m-4">
-            <h2>Lỗi tải dữ liệu!</h2>
-            <p className="mt-2 text-sm">Chi tiết: {error}</p>
-        </div>
-      );
-  }
-  
-  // Xử lý trường hợp không có dữ liệu
-  if (!movies || movies.length === 0) {
-      return (
-        <div className="text-center p-8 dark:text-white">
-            Không tìm thấy dữ liệu phim để hiển thị.
-        </div>
-      );
-  }
-
+  const currentMovie = featuredMovies[currentIndex];
   return (
-    <div className="dark:text-white p-6 max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6">Tất cả phim</h1>
+    <>  
+      {/* --- Khu vực 1: Slideshow Phim doanh thu cao --- */}
+      <div className="relative flex justify-center items-center py-6">
+        {/* Nút Previous */}
+        <button
+            onClick={goToPrev}
+            className="absolute left-0 flex items-center z-10 p-3 bg-black/40 hover:bg-black/60 rounded-full text-white transition duration-200 focus:outline-none focus:ring-2 focus:ring-yellow-400 mx-2"
+            aria-label="Previous movie"
+        >
+            <ChevronLeft className="h-6 w-6" />
+        </button>
 
-        {/* Danh sách phim */}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
-            {movies.map(movie => (
-                <MovieCard key={movie.id} movie={movie} variant="poster" />
-            ))}
+        {/* Poster Chính ở Giữa */}
+        <div className="relative w-fit mx-auto max-w-xs sm:max-w-sm md:max-w-md transition-opacity duration-500 ease-in-out">
+          <div className="relative rounded-lg overflow-hidden shadow-xl">
+            <img 
+                src={currentMovie.image} 
+                alt={currentMovie.title} 
+                className="w-full h-96 object-contain"
+            />
+            
+            {/* Overlay để hiển thị Title và Rating */}
+            <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/80 to-transparent p-4 flex flex-col justify-end">
+                <h3 className="text-white text-xl font-bold mb-1">
+                    {currentMovie.title}
+                </h3>
+                <div className="flex items-center text-sm text-yellow-400">
+                    <Star className="h-4 w-4 mr-1 fill-yellow-400" />
+                    <span>{currentMovie.rate}</span>
+                </div>
+            </div>
+          </div>
+
+            {/* Pagination Dots */}
+            <div className="flex justify-center space-x-2 mt-4">
+                {featuredMovies.map((_, index) => (
+                    <button
+                        key={index}
+                        onClick={() => setCurrentIndex(index)}
+                        className={`h-2 w-2 rounded-full transition-all duration-300 ${
+                            index === currentIndex ? 'bg-red-600 w-5' : 'bg-gray-400 dark:bg-gray-600'
+                        }`}
+                        aria-label={`Go to movie ${index + 1}`}
+                    />
+                ))}
+            </div>
         </div>
 
-        {/* Điều khiển Phân trang */}
-        <div className="flex justify-center items-center space-x-4 mt-10">
-            
-            {/* Nút Trang Trước */}
-            <Button 
-                onClick={() => handlePageChange(currentPage - 1)} 
-                disabled={currentPage === 1 || loading}
-                variant="outline"
+            {/* Nút Next */}
+            <button
+                onClick={goToNext}
+                className="absolute right-0 flex items-center z-10 p-3 bg-black/40 hover:bg-black/60 rounded-full text-white transition duration-200 focus:outline-none focus:ring-2 focus:ring-yellow-400 mx-2"
+                aria-label="Next movie"
             >
-                <ArrowLeft className="h-4 w-4 mr-2" /> Trang Trước
-            </Button>
-            
-            {/* Hiển thị số trang hiện tại */}
-            <span className="text-lg font-semibold">
-                Trang {currentPage} / {totalPages}
-            </span>
-
-            {/* Nút Trang Sau */}
-            <Button 
-                onClick={() => handlePageChange(currentPage + 1)} 
-                disabled={currentPage === totalPages || loading}
-                variant="outline"
-            >
-                Trang Sau <ArrowRight className="h-4 w-4 ml-2" />
-            </Button>
+                <ChevronRight className="h-6 w-6" />
+            </button>
         </div>
-    </div>
+
+      {/* --- Khu vực 2: Phim phổ biến nhất --- */}
+
+      {/* --- Khu vực 3: Phim xếp hạng cao --- */}
+    </>
   );
 };
