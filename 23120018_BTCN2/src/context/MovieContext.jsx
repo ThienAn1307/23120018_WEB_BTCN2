@@ -2,6 +2,8 @@ import React, { createContext, useContext, useState, useCallback } from 'react';
 
 import { getMoviesApi, getTopRatedMoviesApi, getPopularMoviesApi, searchMoviesApi, getMovieByIdApi } from '../api/api'; 
 
+import { fetchPaginatedMovies } from '@/lib/utils';
+
 const MovieContext = createContext();
 
 export const useMovies = () => useContext(MovieContext);
@@ -17,12 +19,12 @@ export const MoviesProvider = ({ children }) => {
     const [searchResults, setSearchResults] = useState([]);
 
     // Hàm tải phim phổ biến
-    const getPopularMovies = useCallback(async (page = 1, limit = 10) => {
+    const getPopularMovies = useCallback(async (totalItems = 30) => {
         setIsLoading(true);
         setError(null);
         try {
-            const result = await getPopularMoviesApi(page, limit);
-            setPopularMovies(result.data);
+            const movies = await fetchPaginatedMovies(getPopularMoviesApi, [], totalItems);
+            setPopularMovies(movies);
         } catch (err) {
             setError("Không thể tải phim phổ biến.");
             throw err;
@@ -32,12 +34,12 @@ export const MoviesProvider = ({ children }) => {
     }, []);
 
     // Hàm tải phim xếp hạng cao
-    const getTopRatedMovies = useCallback(async (category = 'IMDB_TOP_50', page = 1, limit = 10) => {
+    const getTopRatedMovies = useCallback(async (category = 'IMDB_TOP_50', totalItems = 30) => {
         setIsLoading(true);
         setError(null);
         try {
-            const result = await getTopRatedMoviesApi(category, page, limit);
-            setTopRatedMovies(result.data);
+            const movies = await fetchPaginatedMovies(getTopRatedMoviesApi, [category], totalItems);
+            setTopRatedMovies(movies);
         } catch (err) {
             setError("Không thể tải phim xếp hạng cao.");
             throw err;
