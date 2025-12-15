@@ -4,6 +4,7 @@ import { MovieDetailPage } from '../pages/MovieDetailPage';
 import { MainLayout } from '@/layouts/MainLayout';
 import { LoginPage } from '../pages/LoginPage';
 import { RegisterPage } from '../pages/RegisterPage';
+import { ProfilePage } from '../pages/ProfilePage';
 
 export const router = createBrowserRouter([
   {
@@ -14,6 +15,10 @@ export const router = createBrowserRouter([
         index: true,
         element: <HomePage />,
       },
+      {
+        path: '/profile',
+        element: <ProfilePage />,
+      }
     ],
   },
   {
