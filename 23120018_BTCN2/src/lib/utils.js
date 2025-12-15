@@ -23,3 +23,15 @@ export async function fetchPaginatedMovies(apiFn, staticArgs = [], totalItems = 
   const allMovies = results.flatMap(result => result.data);
   return allMovies.slice(0, totalItems);
 }
+
+export async function fetchAllReviews(apiFn, movieId, totalItems = 100) {
+  // Fetch reviews by repeatedly calling the API with different internal pagination
+  // Since the API only accepts movieId, we rely on the backend to handle pagination
+  try {
+    const result = await apiFn(movieId);
+    return result.data || [];
+  } catch (err) {
+    console.error("Error fetching reviews:", err);
+    return [];
+  }
+}
