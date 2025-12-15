@@ -192,8 +192,10 @@ export const getMovieByIdApi = async (movieId) => {
 // ----- REVIEWS API -----
 
 // Hàm lấy đánh giá của một phim
-export const getReviewsByMovieIdApi = async (movieId) => {
-    return handleRequest(`${BASE_URL}/movies/${movieId}/reviews`, {
+export const getReviewsByMovieIdApi = async (movieId, page = 1, limit = 100) => {
+    const query = new URLSearchParams({ page, limit }).toString();
+    const url = `${BASE_URL}/movies/${movieId}/reviews${query ? `?${query}` : ''}`;
+    return handleRequest(url, {
         method: 'GET',
         headers: { 'Authorization': `Bearer ${APP_TOKEN}` }
     });
