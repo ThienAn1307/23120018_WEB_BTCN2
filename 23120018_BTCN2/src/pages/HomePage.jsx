@@ -3,9 +3,11 @@ import { ChevronLeft, ChevronRight, Star } from 'lucide-react';
 import { MovieSection } from '../components/MovieSection';
 
 import { useMovies } from '../context/MovieContext';
+import { useNavigate } from 'react-router-dom';
 
 export const HomePage = () => {
   const { popularMovies, topRatedMovies, getPopularMovies, getTopRatedMovies } = useMovies();
+  const navigate = useNavigate();
 
   // Tải phim khi trang được tải
   useEffect(() => {
@@ -34,6 +36,13 @@ export const HomePage = () => {
   }
   
   const currentMovie = featuredMovies[currentIndex];
+  const handlePosterClick = () => {
+    if (currentMovie && currentMovie.id) {
+      navigate(`/movie-detail?id=${currentMovie.id}`);
+    }
+  };
+
+
   return (
     <>  
       {/* --- Khu vực 1: Slideshow Phim doanh thu cao --- */}
@@ -48,7 +57,7 @@ export const HomePage = () => {
         </button>
 
         {/* Poster Chính ở Giữa */}
-        <div className="relative w-fit mx-auto max-w-xs sm:max-w-sm md:max-w-md transition-opacity duration-500 ease-in-out">
+        <div className="relative w-fit mx-auto max-w-xs sm:max-w-sm md:max-w-md transition-opacity duration-500 ease-in-out cursor-pointer" onClick={handlePosterClick}>
           <div className="relative rounded-lg overflow-hidden shadow-xl">
             <img 
                 src={currentMovie.image} 
@@ -73,7 +82,10 @@ export const HomePage = () => {
                 {featuredMovies.map((_, index) => (
                     <button
                         key={index}
-                        onClick={() => setCurrentIndex(index)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setCurrentIndex(index);
+                        }}
                         className={`h-2 w-2 rounded-full transition-all duration-300 ${
                             index === currentIndex ? 'bg-red-600 w-5' : 'bg-gray-400 dark:bg-gray-600'
                         }`}

@@ -3,6 +3,7 @@ import React, { createContext, useContext, useState, useCallback } from 'react';
 import { getMoviesApi, getTopRatedMoviesApi, getPopularMoviesApi, searchMoviesApi, getMovieByIdApi } from '../api/api'; 
 
 import { fetchPaginatedMovies } from '@/lib/utils';
+import { set } from 'zod';
 
 const MovieContext = createContext();
 
@@ -17,6 +18,9 @@ export const MoviesProvider = ({ children }) => {
     const [popularMovies, setPopularMovies] = useState([]);
     const [topRatedMovies, setTopRatedMovies] = useState([]);
     const [searchResults, setSearchResults] = useState([]);
+
+    // Chi tiết phim hiện tại
+    const [currentMovieDetail, setCurrentMovieDetail] = useState(null);
 
     // Hàm tải phim phổ biến
     const getPopularMovies = useCallback(async (totalItems = 30) => {
@@ -60,15 +64,21 @@ export const MoviesProvider = ({ children }) => {
     }
     
     // Hàm tải chi tiết phim
-    const getMovieById = async (movieId) => {
+    const getMovieById = useCallback(async (movieId) => {
+        setIsLoading(true);
+        setError(null);
+        setCurrentMovieDetail(null); // Xóa chi tiết phim cũ
         try {
             const result = await getMovieByIdApi(movieId);
+            setCurrentMovieDetail(result);
             return result;
         } catch (err) {
             setError("Lỗi khi tải chi tiết phim.");
             throw err;
+        } finally {
+            setIsLoading(false);
         }
-    };
+    }, []);
 
     const value = {
         isLoading,
@@ -76,10 +86,13 @@ export const MoviesProvider = ({ children }) => {
         popularMovies,
         topRatedMovies,
         searchResults,
+        currentMovieDetail,
+        setCurrentMovieDetail,
         getPopularMovies,
         getTopRatedMovies,
         searchMovies,
         getMovieById,
+        
     };
 
     return <MovieContext.Provider value={value}>{children}</MovieContext.Provider>;

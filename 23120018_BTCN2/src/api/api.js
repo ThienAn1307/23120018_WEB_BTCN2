@@ -13,7 +13,6 @@ const handleRequest = async (url, options = {}) => {
     const defaultHeaders = {
         'Content-Type': 'application/json',
         'x-app-token': APP_TOKEN,
-        'Authorization': `Bearer ${APP_TOKEN}`,
         ...options.headers,
     };
     
@@ -48,6 +47,7 @@ export const registerApi = async (data) => {
     // data: { username, email, password, phone, dob }
     return handleRequest(`${BASE_URL}/users/register`, {
         method: 'POST',
+        headers: { 'Authorization': `Bearer ${APP_TOKEN}` },
         body: JSON.stringify(data),
     });
 };
@@ -57,6 +57,7 @@ export const loginApi = async (data) => {
     // data: { username, password }
     return handleRequest(`${BASE_URL}/users/login`, {
         method: 'POST',
+        headers: { 'Authorization': `Bearer ${APP_TOKEN}` },
         body: JSON.stringify(data),
     });
 }

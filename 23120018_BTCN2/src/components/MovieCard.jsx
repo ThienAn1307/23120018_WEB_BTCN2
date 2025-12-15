@@ -1,12 +1,20 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export function MovieCard({ movie }) {
+  const navigate = useNavigate();
   const posterSrc = movie.image || 'https://via.placeholder.com/300x450?text=No+Poster'
+
+    const handleClick = () => { 
+        if (movie && movie.id) {
+            navigate(`/movie-detail?id=${movie.id}`);
+        }
+    };
 
   return (
     <div className="w-1/3 cursor-pointer group">
         {/* Container */}
-        <div className="rounded-lg overflow-hidden shadow-lg border border-gray-700 h-96 transition-transform duration-300 hover:scale-[1.25]">
+        <div className="rounded-lg overflow-hidden shadow-lg border border-gray-700 h-96 transition-transform duration-300 hover:scale-[1.25]" onClick={handleClick}>
             {/* Poster Phim */}
             <img
                 src={posterSrc}
