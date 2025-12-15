@@ -14,7 +14,7 @@ export function MovieCard({ movie }) {
   return (
     <div className="w-1/3 cursor-pointer group">
         {/* Container */}
-        <div className="rounded-lg overflow-hidden shadow-lg border border-gray-700 h-96 transition-transform duration-300 hover:scale-[1.25]" onClick={handleClick}>
+        <div className="rounded-lg overflow-hidden shadow-lg border border-gray-700 h-96 transition-transform duration-300 hover:scale-[1.25] group-hover:z-10 group-hover:relative" onClick={handleClick}>
             {/* Poster Phim */}
             <img
                 src={posterSrc}
