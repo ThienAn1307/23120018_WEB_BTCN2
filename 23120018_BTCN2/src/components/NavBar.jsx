@@ -3,19 +3,32 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Search, Home } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
+import { useLoading } from '../context/LoadingContext';
 
 export const Navbar = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const navigate = useNavigate();
+    const { startLoading, stopLoading } = useLoading();
 
     // Xử lý khi người dùng nhấn Enter hoặc nút Search
     const handleSearch = (e) => {
         e.preventDefault();
         if (searchTerm.trim()) {
-            // Điều hướng đến trang tìm kiếm với tham số truy vấn
-            // Giả định trang tìm kiếm là /search?query=...
-            navigate(`/search?query=${encodeURIComponent(searchTerm.trim())}`);
+            startLoading();
+            setTimeout(() => {
+                navigate(`/search?query=${encodeURIComponent(searchTerm.trim())}`);
+                stopLoading();
+            }, 500);
         }
+    };
+
+    const handleHomeClick = (e) => {
+        e.preventDefault();
+        startLoading();
+        setTimeout(() => {
+            navigate('/');
+            stopLoading();
+        }, 500);
     };
 
     return (
@@ -24,9 +37,9 @@ export const Navbar = () => {
                 
                 {/* Nút Home */}
                 <div className="flex items-center">
-                    <Link to="/" className="text-red-600 hover:bg-gray-200 rounded dark:text-red-400 dark:hover:bg-gray-700 transition duration-150">
+                    <button onClick={handleHomeClick} className="text-red-600 hover:bg-gray-200 rounded dark:text-red-400 dark:hover:bg-gray-700 transition duration-150">
                         <Home className="m-2 h-6 w-6" />
-                    </Link>
+                    </button>
                 </div>
                 
                 {/* Search Box và Search Button */}
