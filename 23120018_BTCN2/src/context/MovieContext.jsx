@@ -1,9 +1,8 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
 
-import { getMoviesApi, getTopRatedMoviesApi, getPopularMoviesApi, searchMoviesApi, getMovieByIdApi } from '../api/api'; 
+import { getMoviesApi, getTopRatedMoviesApi, getPopularMoviesApi, searchMoviesApi, getMovieByIdApi, getReviewsByMovieIdApi } from '../api/api'; 
 
-import { fetchPaginatedMovies } from '@/lib/utils';
-import { set } from 'zod';
+import { fetchPaginatedMovies, fetchAllReviews } from '@/lib/utils';
 
 const MovieContext = createContext();
 
@@ -80,6 +79,20 @@ export const MoviesProvider = ({ children }) => {
         }
     }, []);
 
+    const getReviewsByMovieId = useCallback(async (movieId) => {
+        setIsLoading(true);
+        setError(null);
+        try {
+            const reviews = await fetchAllReviews(getReviewsByMovieIdApi, movieId);
+            return { data: reviews };
+        } catch (err) {
+            setError("Lỗi khi tải đánh giá phim.");
+            throw err;
+        } finally {
+            setIsLoading(false);
+        }
+    }, []);
+
     const value = {
         isLoading,
         error,
@@ -92,7 +105,7 @@ export const MoviesProvider = ({ children }) => {
         getTopRatedMovies,
         searchMovies,
         getMovieById,
-        
+        getReviewsByMovieId,
     };
 
     return <MovieContext.Provider value={value}>{children}</MovieContext.Provider>;
