@@ -70,7 +70,7 @@ export const logoutApi = async () => {
 
     return handleRequest(`${BASE_URL}/users/logout`, {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${APP_TOKEN}` },
+        headers: { 'Authorization': `Bearer ${userToken}` },
     });
 }
 
