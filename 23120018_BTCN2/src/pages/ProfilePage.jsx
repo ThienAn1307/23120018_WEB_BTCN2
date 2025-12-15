@@ -184,7 +184,7 @@ export const ProfilePage = () => {
     );
 };
 
-const ProfileItem = ({ Icon, label, value, name, color, isEditable, onChange, inputType = 'text' }) => (
+const ProfileItem = ({ Icon, label, value, name, color, isEditable, onChange, inputType = 'text', displayValue }) => (
     <div className="flex flex-col space-y-1 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
         <div>
             <Icon className={`h-6 w-6 flex-shrink-0 ${color}`} />
@@ -201,7 +201,7 @@ const ProfileItem = ({ Icon, label, value, name, color, isEditable, onChange, in
             />
         ) : (
             <p className="text-base font-semibold text-gray-800 dark:text-white break-words p-1">
-                {value}
+                {inputType === 'date' ? displayValue : value}
             </p>
         )}
     </div>
