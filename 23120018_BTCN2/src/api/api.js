@@ -85,6 +85,25 @@ export const getCurrentUserApi = async () => {
     });
 }
 
+// Hàm cập nhật thông tin người dùng
+export const updateUserApi = async (data) => {
+    const userToken = getUserToken();
+    if (!userToken) throw new Error('Yêu cầu đăng nhập');
+
+    const updateData = {
+        username: data.username,
+        email: data.email,
+        phone: data.phone,
+        dob: data.dob,
+    };
+
+    return handleRequest(`${BASE_URL}/users/profile`, {
+        method: 'PATCH',
+        headers: { 'Authorization': `Bearer ${userToken}` },
+        body: JSON.stringify(updateData),
+    });
+}
+
 // ----- FAVORITES API -----
 
 // Hàm lấy danh sách phim yêu thích của người dùng

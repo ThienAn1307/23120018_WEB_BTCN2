@@ -26,7 +26,6 @@ export const Header = () => {
     // Hàm xử lý khi chọn Profile
     const handleProfile = () => {
     if (user) {
-            console.log('Đang đăng nhập. Chuyển đến trang Profile.');
             navigate('/profile'); // Chuyển hướng đến trang Profile
         } else {
             alert('Bạn chưa đăng nhập. Chuyển hướng đến trang Login.');

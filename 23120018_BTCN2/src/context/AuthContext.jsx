@@ -46,7 +46,6 @@ export const AuthProvider = ({ children }) => {
             
             // Lưu trữ
             localStorage.setItem('authToken', token);
-            localStorage.setItem('user', JSON.stringify(userData));
             
             // Cập nhật trạng thái
             setUser(userData);
