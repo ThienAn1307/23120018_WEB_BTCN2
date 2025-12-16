@@ -7,6 +7,7 @@ import { MainLayout } from '@/layouts/MainLayout';
 import { LoginPage } from '../pages/LoginPage';
 import { RegisterPage } from '../pages/RegisterPage';
 import { ProfilePage } from '../pages/ProfilePage';
+import { FavoritesPage } from '../pages/FavoritesPage';
 
 export const router = createBrowserRouter([
   {
@@ -32,6 +33,10 @@ export const router = createBrowserRouter([
       {
         path: '/profile',
         element: <ProfilePage />,
+      },
+      {
+        path: '/favorites',
+        element: <FavoritesPage />,
       }
     ],
   },
