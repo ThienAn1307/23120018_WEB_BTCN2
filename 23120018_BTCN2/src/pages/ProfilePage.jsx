@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { getCurrentUserApi, updateUserApi } from '../api/api'; 
-import { User, Mail, Phone, Calendar, Star, Edit, Save, X } from 'lucide-react';
+import { User, Mail, Phone, Calendar, Star, Edit, Save, X, Heart } from 'lucide-react';
 import { ProfileItem } from '../components/ProfileItem';
+import { useNavigate } from 'react-router-dom';
 
 export const ProfilePage = () => {
+    const navigate = useNavigate();
     const [profile, setProfile] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -179,6 +181,17 @@ export const ProfilePage = () => {
                     <ProfileItem Icon={Phone} label="Số điện thoại" name="phone" value={formData?.phone || 'Chưa cung cấp'} color="text-green-500" isEditable={isEditing} onChange={handleInputChange}  />
                     <ProfileItem Icon={Calendar} label="Ngày sinh" name="dob" value={formData?.dob || ''} color="text-yellow-500" isEditable={isEditing} onChange={handleInputChange} inputType="date" displayValue={formatDOB(profile.dob)}/>
                     <ProfileItem Icon={Star} label="Vai trò" value={profile.role?.toUpperCase() || 'N/A'} color="text-red-500" isEditable={false}/>
+
+                {/* Phần quản lý danh sách yêu thích */}
+                <div className="p-6 border-t border-gray-200 dark:border-gray-700">
+                    <button
+                        onClick={() => navigate('/favorites')}
+                        className="w-full bg-gradient-to-r from-pink-500 to-red-500 hover:from-pink-600 hover:to-red-600 text-white font-bold py-3 px-4 rounded-lg transition duration-150 flex items-center justify-center space-x-2 shadow-lg"
+                    >
+                        <Heart className="h-5 w-5 fill-current" />
+                        <span>Xem Danh Sách Phim Yêu Thích</span>
+                    </button>
+                </div>
                 </div>
             </form>
         </div>
