@@ -1,24 +1,41 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Search, Home } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { useLoading } from '../context/LoadingContext';
+import { useMovies } from '../context/MovieContext';
 
 export const Navbar = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const navigate = useNavigate();
+    const location = useLocation();
     const { startLoading, stopLoading } = useLoading();
+    const { searchMovies } = useMovies();
+
+    // Check if on search page
+    const isOnSearchPage = location.pathname === '/search';
 
     // Xử lý khi người dùng nhấn Enter hoặc nút Search
-    const handleSearch = (e) => {
+    const handleSearch = async (e) => {
         e.preventDefault();
+        
+        // Disable search khi đang ở SearchPage
+        if (isOnSearchPage) {
+            setSearchTerm('');
+            return;
+        }
+
         if (searchTerm.trim()) {
-            startLoading();
-            setTimeout(() => {
-                navigate(`/search?query=${encodeURIComponent(searchTerm.trim())}`);
-                stopLoading();
-            }, 500);
+            try {
+                const results = await searchMovies(searchTerm.trim(), { q: searchTerm.trim() }, 100);
+                
+                // Điều hướng đến trang search sau khi fetch xong
+                navigate(`/search?q=${encodeURIComponent(searchTerm.trim())}`);
+                setSearchTerm('');
+            } catch (error) {
+                console.error('❌ Lỗi tìm kiếm:', error.message);
+            }
         }
     };
 
@@ -59,11 +76,11 @@ export const Navbar = () => {
                     {/* Search Button */}
                     <Button 
                         type="submit" 
-                        className="bg-red-600 hover:bg-red-400 dark:bg-red-400 dark:hover:bg-red-500 text-white font-medium px-4 py-2"
-                        disabled={!searchTerm.trim()}
+                        className={`${isOnSearchPage ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-600 hover:bg-red-400'} dark:bg-red-400 dark:hover:bg-red-500 text-white font-medium px-4 py-2`}
+                        disabled={isOnSearchPage}
                     >
                         <Search className="h-5 w-5 md:hidden" /> 
-                        <span className="hidden md:inline">Tìm Kiếm</span>
+                        <span className="hidden md:inline">{isOnSearchPage ? 'Dùng tìm kiếm nâng cao' : 'Tìm Kiếm'}</span>
                     </Button>
                 </form>
 
