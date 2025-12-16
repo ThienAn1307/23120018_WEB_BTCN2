@@ -1,7 +1,9 @@
 import React, { useEffect, useContext, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom'; 
 import { useMovies } from '../context/MovieContext';
-import { Clock, Star, Film, Calendar, Award, MessageCircle, DollarSign, Users, ClipboardList, Zap } from 'lucide-react';
+import { useFavorites } from '../context/FavoritesContext';
+import { useAuth } from '../context/AuthContext';
+import { Clock, Star, Film, Calendar, Award, MessageCircle, DollarSign, Users, ClipboardList, Zap, Heart } from 'lucide-react';
 import { ReviewCard } from '../components/ReviewCard';
 import { RatingsCard } from '../components/RatingsCard';
 import { PersonCard } from '../components/PersonCard';
@@ -13,6 +15,9 @@ const PLACEHOLDER_IMAGE = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/20
 
 export const MovieDetailPage = () => {
     const { getReviewsByMovieId } = useMovies();
+    const { isFavorite, toggleFavorite } = useFavorites();
+    const { user } = useAuth();
+    const navigate = useNavigate();
 
     // Lấy ID phim từ Query String
     const [searchParams] = useSearchParams();
@@ -26,6 +31,9 @@ export const MovieDetailPage = () => {
     // Lấy hàm và state từ Context
     const { getMovieById, isLoading, error } = useMovies();
     const [movieDetail, setMovieDetail] = useState(null);
+
+    // State cho favorites toggle
+    const [isFavoriting, setIsFavoriting] = useState(false);
 
     useEffect(() => {
         if (movieId) {
@@ -98,7 +106,46 @@ export const MovieDetailPage = () => {
                     
                     {/* Tiêu đề & Thông số nhanh */}
                     <div>
-                        <h1 className="text-5xl font-extrabold mb-2">{movie.full_title || movie.title}</h1>
+                        <div className="flex items-start justify-between mb-2">
+                            <h1 className="text-5xl font-extrabold flex-1">{movie.full_title || movie.title}</h1>
+                            
+                            {/* Nút yêu thích */}
+                            <button
+                                onClick={async () => {
+                                    if (!user) {
+                                        alert('Vui lòng đăng nhập để thêm phim yêu thích');
+                                        navigate('/login');
+                                        return;
+                                    }
+                                    
+                                    setIsFavoriting(true);
+                                    try {
+                                        const isNowFavorite = await toggleFavorite(movie);
+                                        if (isNowFavorite) {
+                                            alert('Đã thêm vào danh sách yêu thích!');
+                                        } else {
+                                            alert('Đã xóa khỏi danh sách yêu thích!');
+                                        }
+                                    } catch (err) {
+                                        alert('Có lỗi xảy ra: ' + err.message);
+                                    } finally {
+                                        setIsFavoriting(false);
+                                    }
+                                }}
+                                disabled={isFavoriting}
+                                className={`ml-4 p-3 rounded-full shadow-lg transition duration-300 ${
+                                    isFavorite(movie.id)
+                                        ? 'bg-red-500 hover:bg-red-600 text-white'
+                                        : 'bg-gray-300 hover:bg-gray-400 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300'
+                                } disabled:opacity-50 disabled:cursor-not-allowed`}
+                                title={isFavorite(movie.id) ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích'}
+                            >
+                                <Heart
+                                    className="h-6 w-6"
+                                    fill={isFavorite(movie.id) ? 'currentColor' : 'none'}
+                                />
+                            </button>
+                        </div>
                         <p className="text-xl text-gray-800 mb-4">{movie.year} | {movie.runtime}</p>
                         
                         {/* Ratings */}
