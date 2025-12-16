@@ -4,16 +4,19 @@ import { MainLayout } from './layouts/MainLayout';
 import { AuthProvider } from './context/AuthContext';
 import { LoadingProvider } from './context/LoadingContext';
 import { MoviesProvider } from './context/MovieContext';
+import { FavoritesProvider } from './context/FavoritesContext';
 import { LoadingScreen } from './components/LoadingScreen';
 
 function App() {
   return (
     <LoadingProvider>
       <AuthProvider>
-        <MoviesProvider>
-          <LoadingScreen />
-          <RouterProvider router={router} />
-        </MoviesProvider>
+        <FavoritesProvider>
+          <MoviesProvider>
+            <LoadingScreen />
+            <RouterProvider router={router} />
+          </MoviesProvider>
+        </FavoritesProvider>
       </AuthProvider>
     </LoadingProvider>
   );
