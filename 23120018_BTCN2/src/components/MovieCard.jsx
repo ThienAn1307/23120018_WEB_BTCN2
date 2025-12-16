@@ -1,9 +1,12 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
+// Fallback placeholder as data URI (works offline)
+const PLACEHOLDER_IMAGE = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="450" viewBox="0 0 300 450"%3E%3Crect fill="%23374151" width="300" height="450"/%3E%3Ctext x="50%25" y="50%25" font-size="20" fill="%239CA3AF" text-anchor="middle" dominant-baseline="middle" font-family="Arial"%3ENo Poster%3C/text%3E%3C/svg%3E';
+
 export function MovieCard({ movie }) {
   const navigate = useNavigate();
-  const posterSrc = movie.image || 'https://via.placeholder.com/300x450?text=No+Poster'
+  const posterSrc = movie.image || PLACEHOLDER_IMAGE;
 
     const handleClick = () => { 
         if (movie && movie.id) {
@@ -21,6 +24,11 @@ export function MovieCard({ movie }) {
                 alt={movie?.title || 'Movie Poster'}
                 className="w-full h-full object-fill"
                 loading="lazy"
+                onError={(e) => {
+                    if (e.target.src !== PLACEHOLDER_IMAGE) {
+                        e.target.src = PLACEHOLDER_IMAGE;
+                    }
+                }}
             />
 
             {/* Tiêu đề Phim */}
