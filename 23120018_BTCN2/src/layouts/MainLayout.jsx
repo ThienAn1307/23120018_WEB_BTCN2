@@ -2,7 +2,6 @@ import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
 import { Navbar } from '../components/NavBar';
 import { Outlet } from 'react-router-dom';
-import { MoviesProvider } from '@/context/MovieContext';
 
 const MAX_WIDTH_CLASS = 'max-w-[1200px] mx-auto w-full';
 
@@ -20,11 +19,9 @@ export const MainLayout = ({ children }) => {
       </div>
 
       {/* Nội dung chính*/}
-      <MoviesProvider>
-        <main className={`flex-grow ${MAX_WIDTH_CLASS} p-4`}>
-          <Outlet />
-        </main>
-      </MoviesProvider>
+      <main className={`flex-grow ${MAX_WIDTH_CLASS} p-4`}>
+        <Outlet />
+      </main>
 
       {/* Footer */}
       <div className={MAX_WIDTH_CLASS}>

@@ -3,14 +3,17 @@ import { router } from './routes';
 import { MainLayout } from './layouts/MainLayout';
 import { AuthProvider } from './context/AuthContext';
 import { LoadingProvider } from './context/LoadingContext';
+import { MoviesProvider } from './context/MovieContext';
 import { LoadingScreen } from './components/LoadingScreen';
 
 function App() {
   return (
     <LoadingProvider>
       <AuthProvider>
-        <LoadingScreen />
-        <RouterProvider router={router} />
+        <MoviesProvider>
+          <LoadingScreen />
+          <RouterProvider router={router} />
+        </MoviesProvider>
       </AuthProvider>
     </LoadingProvider>
   );
