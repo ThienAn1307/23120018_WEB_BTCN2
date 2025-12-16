@@ -1,6 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { HomePage } from '../pages/HomePage';
 import { MovieDetailPage } from '../pages/MovieDetailPage';
+import { PersonDetailPage } from '../pages/PersonDetailPage';
 import { MainLayout } from '@/layouts/MainLayout';
 import { LoginPage } from '../pages/LoginPage';
 import { RegisterPage } from '../pages/RegisterPage';
@@ -18,6 +19,10 @@ export const router = createBrowserRouter([
       {
         path: '/movie-detail',
         element: <MovieDetailPage />,
+      },
+      {
+        path: '/person-detail',
+        element: <PersonDetailPage />,
       },
       {
         path: '/profile',
