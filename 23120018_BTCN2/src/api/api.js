@@ -149,12 +149,12 @@ export const getMoviesApi = async (page = 1, limit = 10) => { //
     });
 };
 
-// Hàm tìm kiếm phim theo từ khóa
-export const searchMoviesApi = async (keyword, params = {}) => {
+// Hàm tìm kiếm phim
+export const searchMoviesApi = async (params = {}) => {
     const defaultParams = { page: 1, limit: 10 };
-    params = { ...defaultParams, ...params };
-    const query = new URLSearchParams(params).toString();
-    const url = `${BASE_URL}/movies/search?${encodeURIComponent(keyword)}${query ? `?${query}` : ''}`;
+    const finalParams = { ...defaultParams, ...params };
+    const query = new URLSearchParams(finalParams).toString();
+    const url = `${BASE_URL}/movies/search${query ? `?${query}` : ''}`;
     return handleRequest(url, {
         method: 'GET',
         headers: { 'Authorization': `Bearer ${APP_TOKEN}` }
