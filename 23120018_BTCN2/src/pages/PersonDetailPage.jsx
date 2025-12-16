@@ -35,7 +35,7 @@ export const PersonDetailPage = () => {
                 if (data.name) {
                     setIsLoadingMovies(true);
                     try {
-                        const moviesData = await searchMoviesApi(data.name, { limit: 50 });
+                        const moviesData = await searchMoviesApi({ person: data.name, limit: 50 });
                         console.log('Search Movies Result:', moviesData);
                         setRelatedMovies(moviesData.data || []);
                     } catch (err) {
@@ -94,13 +94,11 @@ export const PersonDetailPage = () => {
     const person = personDetail;
     const knownFor = person.known_for || [];
     
-    console.log('Person:', person);
-    
     // Sử dụng relatedMovies từ search API, nếu không có thì dùng known_for
     const moviesToDisplay = relatedMovies.length > 0 ? relatedMovies : knownFor;
     
     // Phân trang phim
-    const moviesPerPage = 8;
+    const moviesPerPage = 4;
     const totalMovies = moviesToDisplay.length;
     const totalMoviePages = Math.ceil(totalMovies / moviesPerPage);
     const startIndex = (moviePage - 1) * moviesPerPage;
