@@ -13,7 +13,9 @@ import { useNavigate } from 'react-router-dom';
 
 export const Header = () => {
     const { user, logout } = useAuth();
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();
+    const [isLoggingOut, setIsLoggingOut] = React.useState(false);
+    
     // Hàm xử lý Dark Mode
     const handleDarkMode = (checked) => {
         if (checked) {
@@ -25,28 +27,43 @@ export const Header = () => {
 
     // Hàm xử lý khi chọn Profile
     const handleProfile = () => {
-    if (user) {
-            navigate('/profile'); // Chuyển hướng đến trang Profile
-        } else {
-            alert('Bạn chưa đăng nhập. Chuyển hướng đến trang Login.');
-            navigate('/login'); // Chuyển hướng đến trang Login
+        try {
+            if (user && user.id) {
+                navigate('/profile'); // Chuyển hướng đến trang Profile
+            } else {
+                alert('Bạn chưa đăng nhập. Chuyển hướng đến trang Login.');
+                localStorage.clear();
+                navigate('/login'); // Chuyển hướng đến trang Login
+            }
+        } catch (error) {
+            console.error('Lỗi khi điều hướng:', error);
+            alert('Không thể điều hướng. Vui lòng thử lại.');
         }
     };
 
     // Hàm xử lý khi chọn Logout
     const handleLogout = async () => {
+        // Ngăn chặn gọi logout nhiều lần
+        if (isLoggingOut) return;
+        
         try {
             if (!user) {
                 alert('Bạn chưa đăng nhập. Chuyển hướng đến trang Login.');
+                localStorage.clear();
                 navigate('/login'); // Chuyển hướng đến trang Login
                 return;
             }
+            
+            setIsLoggingOut(true);
             await logout();
+            localStorage.clear();
             alert('Đăng xuất thành công!');
             navigate('/'); // Chuyển hướng về trang chủ sau khi đăng xuất
         } catch (error) {
             console.error('Lỗi khi đăng xuất:', error);
             alert('Đăng xuất thất bại. Vui lòng thử lại.');
+        } finally {
+            setIsLoggingOut(false);
         }
     };
 
