@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useCallback } from 'react';
 
 import { getMoviesApi, getTopRatedMoviesApi, getPopularMoviesApi, searchMoviesApi, getMovieByIdApi, getReviewsByMovieIdApi } from '../api/api'; 
 
-import { fetchPaginatedMovies, fetchAllReviews } from '@/lib/utils';
+import { fetchPaginatedMovies, fetchAllReviews, fetchAllMoviesBySearch } from '@/lib/utils';
 
 const MovieContext = createContext();
 
@@ -52,15 +52,21 @@ export const MoviesProvider = ({ children }) => {
     }, []);
 
     // Hàm tìm kiếm
-    const searchMovies = async (keyword, params = {}) => {
+    const searchMovies = useCallback(async (keyword, params = {}, totalItems = 100) => {
+        setIsLoading(true);
+        setError(null);
         try {
-            const result = await searchMoviesApi(keyword, params);
-            setSearchResults(result.data);
+            const allMovies = await fetchAllMoviesBySearch(searchMoviesApi, params, totalItems);
+            setSearchResults(allMovies);
+            return allMovies;
         } catch (err) {
+            console.error('❌ Lỗi tìm kiếm:', err);
             setError("Lỗi khi tìm kiếm phim.");
             throw err;
+        } finally {
+            setIsLoading(false);
         }
-    }
+    }, []);
     
     // Hàm tải chi tiết phim
     const getMovieById = useCallback(async (movieId) => {

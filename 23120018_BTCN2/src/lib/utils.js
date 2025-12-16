@@ -35,3 +35,53 @@ export async function fetchAllReviews(apiFn, movieId, totalItems = 100) {
     return [];
   }
 }
+
+export async function fetchAllMoviesBySearch(apiFn, params = {}, totalItems = 100) {
+  // Fetch all movies by search with pagination
+  if (totalItems <= API_PAGE_LIMIT) {
+    const result = await apiFn({ ...params, page: 1, limit: totalItems });
+    return result.data || [];
+  }
+
+  const allMovies = [];
+  const seenIds = new Set(); // Track unique movie IDs
+  const defaultParams = { page: 1, limit: API_PAGE_LIMIT };
+  const totalPages = Math.ceil(totalItems / API_PAGE_LIMIT);
+  
+  for (let page = 1; page <= totalPages; page++) {
+    const finalParams = { ...defaultParams, ...params, page };
+    try {
+      const result = await apiFn(finalParams);
+      
+      if (!result.data || result.data.length === 0) {
+        break;
+      }
+      
+      // Filter out duplicates
+      const uniqueMovies = result.data.filter(movie => {
+        const movieId = movie.id || movie._id;
+        if (seenIds.has(movieId)) {
+          return false;
+        }
+        seenIds.add(movieId);
+        return true;
+      });
+      
+      allMovies.push(...uniqueMovies);
+      
+      if (allMovies.length >= totalItems) {
+        break;
+      }
+      
+      if (result.data.length < API_PAGE_LIMIT) {
+        break;
+      }
+    } catch (err) {
+      console.error(`❌ Lỗi khi fetch phim:`, err);
+      break;
+    }
+  }
+  
+  const finalResults = allMovies.slice(0, totalItems);
+  return finalResults;
+}
